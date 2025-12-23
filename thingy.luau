@@ -167,56 +167,56 @@ local CurrentESPOutlineTransparency = 1
 -- Color Pickers with Direct Color3 definitions
 local Forsaken_SurvivorESPFillColor = ForsakenTab:CreateColorPicker({
 	Name = "Survivor ESP Fill Color",
-	DefaultColor = Color3.fromRGB(56, 119, 255),
+	Color = Color3.fromRGB(56, 119, 255),
 	Flag = "SFillPicker",
 	Callback = function(Value) CurrentSurvivorESPColor = Value end
 })
 
 local Forsaken_SurvivorESPOutlineColor = ForsakenTab:CreateColorPicker({
 	Name = "Survivor ESP Outline Color",
-	DefaultColor = Color3.fromRGB(31, 65, 139),
+	Color = Color3.fromRGB(31, 65, 139),
 	Flag = "SOutlinePicker",
 	Callback = function(Value) CurrentSurvivorESPOutlineColor = Value end
 })
 
 local Forsaken_KillerESPFillColor = ForsakenTab:CreateColorPicker({
 	Name = "Killer ESP Fill Color",
-	DefaultColor = Color3.fromRGB(255, 52, 52),
+	Color = Color3.fromRGB(255, 52, 52),
 	Flag = "KFillPicker",
 	Callback = function(Value) CurrentKillerESPColor = Value end
 })
 
 local Forsaken_KillerESPOutlineColor = ForsakenTab:CreateColorPicker({
 	Name = "Killer ESP Outline Color",
-	DefaultColor = Color3.fromRGB(132, 27, 27),
+	Color = Color3.fromRGB(132, 27, 27),
 	Flag = "KOutlinePicker",
 	Callback = function(Value) CurrentKillerESPOutlineColor = Value end
 })
 
 local Forsaken_GeneratorESPFillColor = ForsakenTab:CreateColorPicker({
 	Name = "Generator ESP Fill Color",
-	DefaultColor = Color3.fromRGB(255, 154, 53),
+	Color = Color3.fromRGB(255, 154, 53),
 	Flag = "GFillPicker",
 	Callback = function(Value) CurrentGeneratorESPColor = Value end
 })
 
 local Forsaken_GeneratorESPOutlineColor = ForsakenTab:CreateColorPicker({
 	Name = "Generator ESP Outline Color",
-	DefaultColor = Color3.fromRGB(138, 83, 29),
+	Color = Color3.fromRGB(138, 83, 29),
 	Flag = "GOutlinePicker",
 	Callback = function(Value) CurrentGeneratorESPOutlineColor = Value end
 })
 
 local Forsaken_ItemESPFillColor = ForsakenTab:CreateColorPicker({
 	Name = "Item ESP Fill Color",
-	DefaultColor = Color3.fromRGB(108, 255, 169),
+	Color = Color3.fromRGB(108, 255, 169),
 	Flag = "IFillPicker",
 	Callback = function(Value) CurrentItemESPColor = Value end
 })
 
 local Forsaken_ItemESPOutlineColor = ForsakenTab:CreateColorPicker({
 	Name = "Item ESP Outline Color",
-	DefaultColor = Color3.fromRGB(41, 116, 77),
+	Color = Color3.fromRGB(41, 116, 77),
 	Flag = "IOutlinePicker",
 	Callback = function(Value) CurrentItemESPOutlineColor = Value end
 })
