@@ -11,7 +11,6 @@ local SupportedGameIDs = {
 local isSupported = false
 
 for _, id in pairs(SupportedGameIDs) do
-	-- Using tostring to ensure comparison works regardless of table format
 	if tostring(game.PlaceId) == id or tostring(game.GameId) == id then
 		isSupported = true
 		break
@@ -21,36 +20,36 @@ end
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-	Name = "Artful's Multi-Purpose Exploit Tool",
-	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+	Name = "Rayfield Example Window",
+	Icon = 0,
 	LoadingTitle = "Artful's Multi-Purpose Exploit",
 	LoadingSubtitle = "by Artful",
-	Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+	Theme = "Default",
 
 	DisableRayfieldPrompts = false,
-	DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+	DisableBuildWarnings = false,
 
 	ConfigurationSaving = {
 		Enabled = false,
-		FolderName = nil, -- Create a custom folder for your hub/game
+		FolderName = nil,
 		FileName = "nobody else gonna find dis"
 	},
 
 	Discord = {
-		Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-		Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-		RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+		Enabled = false,
+		Invite = "noinvitelink",
+		RememberJoins = true
 	},
 
-	KeySystem = false, -- Set this to true to use our key system
+	KeySystem = false,
 	KeySettings = {
 		Title = "Untitled",
 		Subtitle = "Key System",
-		Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
-		FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-		SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-		GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-		Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+		Note = "No method of obtaining the key is provided",
+		FileName = "Key",
+		SaveKey = true,
+		GrabKeyFromSite = false,
+		Key = {"Hello"}
 	}
 })
 
@@ -103,11 +102,9 @@ local Keybinds_Forsaken_Observant = KeybindsTab:CreateKeybind({
 		if not Ingame then return end
 		local ActualMap = Ingame:FindFirstChild("Map")
 		if not ActualMap then return end
-		
 		for _, obj in ipairs(ActualMap:GetDescendants()) do
 			if obj:IsA("Model") and obj.Name == "Generator" then
-				local generator = obj
-				local generatormain = generator:FindFirstChild("Main") or generator.PrimaryPart
+				local generatormain = obj:FindFirstChild("Main") or obj.PrimaryPart
 
 				if generatormain then
 					local billboard = Instance.new("BillboardGui")
@@ -124,14 +121,9 @@ local Keybinds_Forsaken_Observant = KeybindsTab:CreateKeybind({
 					tpbutton.MouseButton1Click:Connect(function()
 						local player = game.Players.LocalPlayer
 						if player.Character then
-							player.Character:PivotTo(generator:GetPivot())
+							player.Character:PivotTo(obj:GetPivot())
 						end
-
-						for _, otherObj in ipairs(workspace:GetDescendants()) do
-							if otherObj:IsA("BillboardGui") and otherObj.Name == "GenTP" then
-								otherObj:Destroy()
-							end
-						end
+						billboard:Destroy()
 					end)
 				end
 			end
@@ -172,70 +164,69 @@ local CurrentItemESPOutlineColor = Color3.fromRGB(41, 116, 77)
 local CurrentESPFillTransparency = 0.5
 local CurrentESPOutlineTransparency = 1
 
--- Color Pickers (Fixed ToHSV Error)
+-- Color Pickers with Direct Color3 definitions
 local Forsaken_SurvivorESPFillColor = ForsakenTab:CreateColorPicker({
 	Name = "Survivor ESP Fill Color",
 	DefaultColor = Color3.fromRGB(56, 119, 255),
-	Flag = "SurvivorESPFillColorPicker",
+	Flag = "SFillPicker",
 	Callback = function(Value) CurrentSurvivorESPColor = Value end
 })
 
 local Forsaken_SurvivorESPOutlineColor = ForsakenTab:CreateColorPicker({
 	Name = "Survivor ESP Outline Color",
 	DefaultColor = Color3.fromRGB(31, 65, 139),
-	Flag = "SurvivorESPOutlineColorPicker",
+	Flag = "SOutlinePicker",
 	Callback = function(Value) CurrentSurvivorESPOutlineColor = Value end
 })
 
 local Forsaken_KillerESPFillColor = ForsakenTab:CreateColorPicker({
 	Name = "Killer ESP Fill Color",
 	DefaultColor = Color3.fromRGB(255, 52, 52),
-	Flag = "KillerESPFillColorPicker",
+	Flag = "KFillPicker",
 	Callback = function(Value) CurrentKillerESPColor = Value end
 })
 
 local Forsaken_KillerESPOutlineColor = ForsakenTab:CreateColorPicker({
 	Name = "Killer ESP Outline Color",
 	DefaultColor = Color3.fromRGB(132, 27, 27),
-	Flag = "KillerESPOutlineColorPicker",
+	Flag = "KOutlinePicker",
 	Callback = function(Value) CurrentKillerESPOutlineColor = Value end
 })
 
 local Forsaken_GeneratorESPFillColor = ForsakenTab:CreateColorPicker({
 	Name = "Generator ESP Fill Color",
 	DefaultColor = Color3.fromRGB(255, 154, 53),
-	Flag = "GeneratorESPFillColorPicker",
+	Flag = "GFillPicker",
 	Callback = function(Value) CurrentGeneratorESPColor = Value end
 })
 
 local Forsaken_GeneratorESPOutlineColor = ForsakenTab:CreateColorPicker({
 	Name = "Generator ESP Outline Color",
 	DefaultColor = Color3.fromRGB(138, 83, 29),
-	Flag = "GeneratorESPOutlineColorPicker",
+	Flag = "GOutlinePicker",
 	Callback = function(Value) CurrentGeneratorESPOutlineColor = Value end
 })
 
 local Forsaken_ItemESPFillColor = ForsakenTab:CreateColorPicker({
 	Name = "Item ESP Fill Color",
 	DefaultColor = Color3.fromRGB(108, 255, 169),
-	Flag = "ItemESPFillColorPicker",
+	Flag = "IFillPicker",
 	Callback = function(Value) CurrentItemESPColor = Value end
 })
 
 local Forsaken_ItemESPOutlineColor = ForsakenTab:CreateColorPicker({
 	Name = "Item ESP Outline Color",
 	DefaultColor = Color3.fromRGB(41, 116, 77),
-	Flag = "ItemESPOutlineColorPicker",
+	Flag = "IOutlinePicker",
 	Callback = function(Value) CurrentItemESPOutlineColor = Value end
 })
 
--- Sliders (Cleaned)
 local Forsaken_FillTransparency = ForsakenTab:CreateSlider({
 	Name = "ESP Fill Transparency",
 	Range = {0, 1},
 	Increment = 0.1,
 	CurrentValue = 0.5,
-	Flag = "ESPFillTransparency",
+	Flag = "ESPFillTrans",
 	Callback = function(Value) CurrentESPFillTransparency = Value end,
 })
 
@@ -244,11 +235,11 @@ local Forsaken_OutlineTransparency = ForsakenTab:CreateSlider({
 	Range = {0, 1},
 	Increment = 0.1,
 	CurrentValue = 1,
-	Flag = "ESPOutlineTransparency",
+	Flag = "ESPOutlineTrans",
 	Callback = function(Value) CurrentESPOutlineTransparency = Value end,
 })
 
--- ESP Toggles
+-- ESP Logic
 local survivorConnection
 local Forsaken_SurvivorESP = ForsakenTab:CreateToggle({
 	Name = "Survivor ESP",
@@ -256,18 +247,17 @@ local Forsaken_SurvivorESP = ForsakenTab:CreateToggle({
 	Flag = "SurvivorESP_Flag",
 	Callback = function(Value)
 		if Value then
-			local Players = workspace:FindFirstChild("Players")
-			local survivors = Players and Players:FindFirstChild("Survivors")
+			local PlayersFolder = workspace:FindFirstChild("Players")
+			local survivors = PlayersFolder and PlayersFolder:FindFirstChild("Survivors")
 			if not survivors then return end
 			local function applyESP(model)
 				if model:IsA("Model") and not model:FindFirstChild("ESPHighlight") then
-					local highlight = Instance.new("Highlight")
+					local highlight = Instance.new("Highlight", model)
 					highlight.Name = "ESPHighlight"
 					highlight.FillColor = CurrentSurvivorESPColor
 					highlight.OutlineColor = CurrentSurvivorESPOutlineColor
 					highlight.FillTransparency = CurrentESPFillTransparency
 					highlight.OutlineTransparency = CurrentESPOutlineTransparency
-					highlight.Parent = model
 				end
 			end
 			for _, obj in ipairs(survivors:GetChildren()) do applyESP(obj) end
@@ -286,18 +276,17 @@ local Forsaken_KillerESP = ForsakenTab:CreateToggle({
 	Flag = "KillerESP_Flag",
 	Callback = function(Value)
 		if Value then
-			local Players = workspace:FindFirstChild("Players")
-			local killers = Players and Players:FindFirstChild("Killers")
+			local PlayersFolder = workspace:FindFirstChild("Players")
+			local killers = PlayersFolder and PlayersFolder:FindFirstChild("Killers")
 			if not killers then return end
 			local function applyESP(model)
 				if model:IsA("Model") and not model:FindFirstChild("KillerHighlight") then
-					local highlight = Instance.new("Highlight")
+					local highlight = Instance.new("Highlight", model)
 					highlight.Name = "KillerHighlight"
 					highlight.FillColor = CurrentKillerESPColor
 					highlight.OutlineColor = CurrentKillerESPOutlineColor
 					highlight.FillTransparency = CurrentESPFillTransparency
 					highlight.OutlineTransparency = CurrentESPOutlineTransparency
-					highlight.Parent = model
 				end
 			end
 			for _, obj in ipairs(killers:GetChildren()) do applyESP(obj) end
@@ -337,16 +326,43 @@ local Forsaken_GeneratorESP = ForsakenTab:CreateToggle({
 	end,
 })
 
--- Movement & Speed
+local itemConnection
+local Forsaken_ItemESP = ForsakenTab:CreateToggle({
+	Name = "Item ESP",
+	CurrentValue = false,
+	Flag = "ItemESP_Flag",
+	Callback = function(Value)
+		local ActualMap = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
+		if Value then
+			if not ActualMap then return end
+			local function applyItemESP(obj)
+				if obj:IsA("Tool") and not obj:FindFirstChild("ItemHighlight") then
+					local highlight = Instance.new("Highlight", obj)
+					highlight.Name = "ItemHighlight"
+					highlight.FillColor = CurrentItemESPColor
+					highlight.OutlineColor = CurrentItemESPOutlineColor
+					highlight.FillTransparency = CurrentESPFillTransparency
+					highlight.OutlineTransparency = CurrentESPOutlineTransparency
+				end
+			end
+			for _, obj in ipairs(ActualMap:GetChildren()) do applyItemESP(obj) end
+			itemConnection = ActualMap.ChildAdded:Connect(applyItemESP)
+		else
+			if itemConnection then itemConnection:Disconnect() end
+			for _, obj in ipairs(workspace:GetDescendants()) do if obj.Name == "ItemHighlight" then obj:Destroy() end end
+		end
+	end,
+})
+
+-- Movement/Speed Section
 local Forsaken_SpeedExploitsLabel = ForsakenTab:CreateParagraph({Title = "Speed Exploits", Content = ""})
 local CurrentSpeedMultiplierValue = 1.35
-
 local Forsaken_SpeedMarkiplier = ForsakenTab:CreateSlider({
 	Name = "Set Speed Multiplier Value",
 	Range = {1, 2},
 	Increment = 0.05,
 	CurrentValue = 1.35,
-	Flag = "SpeedSliderFlag",
+	Flag = "SpeedSlider",
 	Callback = function(Value) CurrentSpeedMultiplierValue = Value end,
 })
 
@@ -363,13 +379,13 @@ local Forsaken_CreateSpeedMarkiplier = ForsakenTab:CreateButton({
 	end,
 })
 
--- Generator Logic
+-- Generator Fix Section
 local Forsaken_GeneratorExploitsLabel = ForsakenTab:CreateParagraph({Title = "Generator Exploits", Content = ""})
-
 local Forsaken_InstantFixGenerator = ForsakenTab:CreateButton({
 	Name = "Fire RE (Finishes Puzzle)",
 	Callback = function()
-		local character = game.Players.LocalPlayer.Character
+		local player = game.Players.LocalPlayer
+		local character = player.Character
 		local ActualMap = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
 		if character and ActualMap then
 			for _, obj in ipairs(ActualMap:GetChildren()) do
@@ -382,10 +398,9 @@ local Forsaken_InstantFixGenerator = ForsakenTab:CreateButton({
 	end,
 })
 
--- Jump Power
+-- Jump Power Section
 local Forsaken_OtherLabel = ForsakenTab:CreateParagraph({Title = "Other Exploits", Content = ""})
 local CurrentJumpPower = 50
-
 local Forsaken_JumpPowerSlider = ForsakenTab:CreateSlider({
 	Name = "Jump Power Value",
 	Range = {0, 150},
@@ -395,11 +410,14 @@ local Forsaken_JumpPowerSlider = ForsakenTab:CreateSlider({
 	Callback = function(Value) CurrentJumpPower = Value end,
 })
 
-local Forsaken_SetJumpButton = ForsakenTab:CreateButton({
+local Forsaken_SetJumpPower = ForsakenTab:CreateButton({
 	Name = "Set Jump Power",
 	Callback = function()
-		local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-		if hum then hum.JumpPower = CurrentJumpPower hum.UseJumpPower = true end
+		local character = game.Players.LocalPlayer.Character
+		if character and character:FindFirstChild("Humanoid") then
+			character.Humanoid.JumpPower = CurrentJumpPower
+			character.Humanoid.UseJumpPower = true
+		end
 	end,
 })
 
