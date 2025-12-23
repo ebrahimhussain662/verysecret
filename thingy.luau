@@ -59,17 +59,17 @@ local InfoTab = Window:CreateTab("Info", 4483362458)
 
 local Info_Message = InfoTab:CreateParagraph({
 	Title = "Hello!",
-	Content = "Thanks for using this!",              -- No tooltip info
+	Content = "Thanks for using this!",
 })
 
 local Info_Version = InfoTab:CreateParagraph({
 	Title = "ARTFUL'S MULTI-PURPOSE EXPLOIT",
-	Content = "Version 1.0.0 (December 22 2025)",              -- No tooltip info
+	Content = "Version 1.0.0 (December 22 2025)",
 })
 
 local Info_SupportedGames = InfoTab:CreateParagraph({
 	Title = "SUPPORTED GAMES",
-	Content = "Forsaken\nDie Of Death\nInfernity",              -- No tooltip info
+	Content = "Forsaken\nDie Of Death\nInfernity",
 })
 
 local Info_GameID
@@ -77,7 +77,7 @@ local Info_GameID
 if isSupported then
 	Info_GameID = InfoTab:CreateParagraph({
 		Title = "Game ID: " ..game.GameId.. "(Supported)",
-		Content = "",              -- No tooltip info
+		Content = "",
 	})
 end
 
@@ -88,7 +88,7 @@ local Keybinds_Divider1 = KeybindsTab:CreateDivider()
 
 local Keybinds_ForsakenLabel = KeybindsTab:CreateParagraph({
 	Title = "FORSAKEN",
-	Content = "",              -- No tooltip info
+	Content = "",
 })
 
 local Keybinds_Forsaken_Observant = KeybindsTab:CreateKeybind({
@@ -167,12 +167,12 @@ local Keybinds_Divider2 = KeybindsTab:CreateDivider()
 
 local Keybinds_DoDLabel = KeybindsTab:CreateParagraph({
 	Title = "DIE OF DEATH",
-	Content = "",              -- No tooltip info
+	Content = "",
 })
 
 local Keybinds_DoDLabel = KeybindsTab:CreateParagraph({
 	Title = "The Rest of this Section is HIGHLY unfinished!",
-	Content = "Come back later!",              -- No tooltip info
+	Content = "Come back later!",
 })
 
 -- << Forsaken Tab >> --
@@ -180,7 +180,7 @@ local ForsakenTab = Window:CreateTab("Forsaken", 4483362458)
 
 local Forsaken_ESPLabel = ForsakenTab:CreateParagraph({
 	Title = "ESP",
-	Content = "",              -- No tooltip info
+	Content = "",
 })
 
 -- << !! IMPORTANT VARIABLES REQUIRED FOR THIS SECTION !! >> --
@@ -499,7 +499,7 @@ local Forsaken_ItemESP = ForsakenTab:CreateToggle({
 
 local Forsaken_SpeedExploitsLabel = ForsakenTab:CreateParagraph({
 	Title = "Speed Exploits",
-	Content = "",              -- No tooltip info
+	Content = "",
 })
 
 local CurrentSpeedMultiplierValue = 1
@@ -535,7 +535,7 @@ local Forsaken_CreateSpeedMarkiplier = ForsakenTab:CreateButton({
 
 local Forsaken_GeneratorExploitsLabel = ForsakenTab:CreateParagraph({
 	Title = "Generator Exploits",
-	Content = "",              -- No tooltip info
+	Content = "",
 })
 
 local Forsaken_InstantFixGenerator = ForsakenTab:CreateButton({
@@ -572,7 +572,7 @@ local Forsaken_InstantFixGenerator = ForsakenTab:CreateButton({
 
 local Forsaken_OtherLabel = ForsakenTab:CreateParagraph({
 	Title = "Other Exploits",
-	Content = "",              -- No tooltip info
+	Content = "",
 })
 
 local CurrentJumpPower = 50
