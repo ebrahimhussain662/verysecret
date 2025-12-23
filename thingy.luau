@@ -20,7 +20,7 @@ end
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-	Name = "Rayfield Example Window",
+	Name = "Artful's Multi-Purpose Exploit",
 	Icon = 0,
 	LoadingTitle = "Artful's Multi-Purpose Exploit",
 	LoadingSubtitle = "by Artful",
@@ -63,12 +63,17 @@ local Info_Message = InfoTab:CreateParagraph({
 
 local Info_Version = InfoTab:CreateParagraph({
 	Title = "ARTFUL'S MULTI-PURPOSE EXPLOIT",
-	Content = "Version 1.0.0 (December 22 2025)",
+	Content = "Version 1.0.1 (December 23 2025)",
 })
 
 local Info_SupportedGames = InfoTab:CreateParagraph({
 	Title = "SUPPORTED GAMES",
 	Content = "Forsaken\nDie Of Death\nInfernity",
+})
+
+local Info_UpdateLog = InfoTab:CreateParagraph({
+	Title = "UPDATE LOG",
+	Content = "- Fixed Generator Teleport GUI buttons not working (POSSIBLY, IN TESTING)\n- Fixed Window Title being Rayfield Example Window",
 })
 
 local Info_GameID
