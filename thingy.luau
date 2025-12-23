@@ -126,7 +126,7 @@ local Keybinds_Forsaken_Observant = KeybindsTab:CreateKeybind({
 					tpbutton.MouseButton1Click:Connect(function()
 						local player = game.Players.LocalPlayer
 						if player.Character then
-							player.Character:PivotTo(obj:GetPivot())
+							player.Character:PivotTo(obj.Positions.Center.CFrame)
 						end
 						billboard:Destroy()
 					end)
