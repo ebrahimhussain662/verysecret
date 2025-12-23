@@ -4,8 +4,7 @@ debugX = true
 
 local SupportedGameIDs = {
 	"6331902150", -- Forsaken
-	"7344582593", -- Die of Death
-	"7676963071" -- Infernity
+	"7344582593" -- Die of Death
 }
 
 local isSupported = false
@@ -30,9 +29,9 @@ local Window = Rayfield:CreateWindow({
 	DisableBuildWarnings = false,
 
 	ConfigurationSaving = {
-		Enabled = false,
+		Enabled = true,
 		FolderName = nil,
-		FileName = "nobody else gonna find dis"
+		FileName = "rahahashaha"
 	},
 
 	Discord = {
@@ -41,15 +40,15 @@ local Window = Rayfield:CreateWindow({
 		RememberJoins = true
 	},
 
-	KeySystem = false,
+	KeySystem = true,
 	KeySettings = {
-		Title = "Untitled",
+		Title = "Key Thing",
 		Subtitle = "Key System",
-		Note = "No method of obtaining the key is provided",
+		Note = "Key is \"1eggs\"",
 		FileName = "Key",
 		SaveKey = true,
 		GrabKeyFromSite = false,
-		Key = {"Hello"}
+		Key = {"1eggs"}
 	}
 })
 
@@ -63,17 +62,17 @@ local Info_Message = InfoTab:CreateParagraph({
 
 local Info_Version = InfoTab:CreateParagraph({
 	Title = "ARTFUL'S MULTI-PURPOSE EXPLOIT",
-	Content = "Version 1.0.2 (December 23 2025)",
+	Content = "Version 1.0.3 (December 23 2025)",
 })
 
 local Info_SupportedGames = InfoTab:CreateParagraph({
 	Title = "SUPPORTED GAMES",
-	Content = "Forsaken\nDie Of Death\nInfernity",
+	Content = "Forsaken\nDie Of Death",
 })
 
 local Info_UpdateLog = InfoTab:CreateParagraph({
 	Title = "UPDATE LOG",
-	Content = "- Removed the Keybinds Tab\n- Replaced the Generator Teleport Keybind to TP To Unfinished Generator\n- Made the Generator and Item ESP update when a new generator/item is added",
+	Content = "- ACTUALLY Removed the Keybinds Tab\n- Added Anti-Slowdown Toggle\n- Added Infinite Stamina Toggle (STILL IN TESTING)",
 })
 
 local Info_GameID
@@ -84,69 +83,6 @@ if isSupported then
 		Content = "",
 	})
 end
-
--- << Keybinds Tab >> --
-local KeybindsTab = Window:CreateTab("Keybinds", 4483362458)
-
-local Keybinds_Divider1 = KeybindsTab:CreateDivider()
-
-local Keybinds_ForsakenLabel = KeybindsTab:CreateParagraph({
-	Title = "FORSAKEN",
-	Content = "",
-})
-
-local Keybinds_Forsaken_Observant = KeybindsTab:CreateKeybind({
-	Name = "Toggle Generator Teleport",
-	CurrentKeybind = "M",
-	HoldToInteract = false,
-	Flag = "ObservantKeybind",
-	Callback = function(Keybind)
-		local Map = workspace:FindFirstChild("Map")
-		if not Map then return end
-		local Ingame = Map:FindFirstChild("Ingame")
-		if not Ingame then return end
-		local ActualMap = Ingame:FindFirstChild("Map")
-		if not ActualMap then return end
-		for _, obj in ipairs(ActualMap:GetDescendants()) do
-			if obj:IsA("Model") and obj.Name == "Generator" then
-				local generatormain = obj:FindFirstChild("Main") or obj.PrimaryPart
-
-				if generatormain then
-					local billboard = Instance.new("BillboardGui")
-					billboard.Name = "GenTP"
-					billboard.Parent = generatormain
-					billboard.Size = UDim2.new(0, 50, 0, 50)
-					billboard.AlwaysOnTop = true
-
-					local tpbutton = Instance.new("TextButton")
-					tpbutton.Parent = billboard
-					tpbutton.Size = UDim2.new(1, 0, 1, 0)
-					tpbutton.Text = "Teleport"
-
-					tpbutton.MouseButton1Click:Connect(function()
-						local player = game.Players.LocalPlayer
-						if player.Character then
-							player.Character:PivotTo(obj.Positions.Center.CFrame)
-						end
-						billboard:Destroy()
-					end)
-				end
-			end
-		end
-	end
-})
-
-local Keybinds_Divider2 = KeybindsTab:CreateDivider()
-
-local Keybinds_DoDLabel = KeybindsTab:CreateParagraph({
-	Title = "DIE OF DEATH",
-	Content = "",
-})
-
-local Keybinds_DoDLabel_Unfinished = KeybindsTab:CreateParagraph({
-	Title = "The Rest of this Section is HIGHLY unfinished!",
-	Content = "Come back later!",
-})
 
 -- << Forsaken Tab >> --
 local ForsakenTab = Window:CreateTab("Forsaken", 4483362458)
@@ -305,89 +241,89 @@ local Forsaken_KillerESP = ForsakenTab:CreateToggle({
 
 local generatorConnection
 local Forsaken_GeneratorESP = ForsakenTab:CreateToggle({
-    Name = "Generator ESP (Unfinished Only)",
-    CurrentValue = false,
-    Flag = "GenESP_Flag",
-    Callback = function(Value)
-        local ActualMap = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
-        
-        if Value then
-            if not ActualMap then return end
-            
-            local function applyGenESP(obj)
-                if obj.Name == "Generator" and obj:IsA("Model") then
-                    local progress = obj:FindFirstChild("Progress")
-                    
-                    -- Only apply if not finished
-                    if progress and progress.Value < 100 then
-                        if not obj:FindFirstChild("GenHighlight") then
-                            local highlight = Instance.new("Highlight", obj)
-                            highlight.Name = "GenHighlight"
-                            highlight.FillColor = CurrentGeneratorESPColor
-                            highlight.OutlineColor = CurrentGeneratorESPOutlineColor
-                            highlight.FillTransparency = CurrentESPFillTransparency
-                        end
-                    end
+	Name = "Generator ESP (Unfinished Generators)",
+	CurrentValue = false,
+	Flag = "GenESP_Flag",
+	Callback = function(Value)
+		local ActualMap = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
 
-                    -- Listen for the generator finishing to remove the highlight
-                    if progress then
-                        progress:GetPropertyChangedSignal("Value"):Connect(function()
-                            if progress.Value >= 100 then
-                                local h = obj:FindFirstChild("GenHighlight")
-                                if h then h:Destroy() end
-                            end
-                        end)
-                    end
-                end
-            end
+		if Value then
+			if not ActualMap then return end
 
-            for _, obj in ipairs(ActualMap:GetChildren()) do applyGenESP(obj) end
-            generatorConnection = ActualMap.ChildAdded:Connect(applyGenESP)
-        else
-            if generatorConnection then generatorConnection:Disconnect() end
-            for _, obj in ipairs(workspace:GetDescendants()) do 
-                if obj.Name == "GenHighlight" then obj:Destroy() end 
-            end
-        end
-    end,
+			local function applyGenESP(obj)
+				if obj.Name == "Generator" and obj:IsA("Model") then
+					local progress = obj:FindFirstChild("Progress")
+
+					-- Only apply if not finished
+					if progress and progress.Value < 100 then
+						if not obj:FindFirstChild("GenHighlight") then
+							local highlight = Instance.new("Highlight", obj)
+							highlight.Name = "GenHighlight"
+							highlight.FillColor = CurrentGeneratorESPColor
+							highlight.OutlineColor = CurrentGeneratorESPOutlineColor
+							highlight.FillTransparency = CurrentESPFillTransparency
+						end
+					end
+
+					-- Listen for the generator finishing to remove the highlight
+					if progress then
+						progress:GetPropertyChangedSignal("Value"):Connect(function()
+							if progress.Value >= 100 then
+								local h = obj:FindFirstChild("GenHighlight")
+								if h then h:Destroy() end
+							end
+						end)
+					end
+				end
+			end
+
+			for _, obj in ipairs(ActualMap:GetChildren()) do applyGenESP(obj) end
+			generatorConnection = ActualMap.ChildAdded:Connect(applyGenESP)
+		else
+			if generatorConnection then generatorConnection:Disconnect() end
+			for _, obj in ipairs(workspace:GetDescendants()) do 
+				if obj.Name == "GenHighlight" then obj:Destroy() end 
+			end
+		end
+	end,
 })
 
 local itemConnection
 local Forsaken_ItemESP = ForsakenTab:CreateToggle({
-    Name = "Item ESP",
-    CurrentValue = false,
-    Flag = "ItemESP_Flag",
-    Callback = function(Value)
-        local ActualMap = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
-        
-        if Value then
-            if not ActualMap then return end
-            
-            local function applyItemESP(obj)
-                -- Checking for Tools or specific Item names in the map
-                if obj:IsA("Tool") and not obj:FindFirstChild("ItemHighlight" then
-                    -- Optional: Filter for specific items if needed
-                    local highlight = Instance.new("Highlight", obj)
-                    highlight.Name = "ItemHighlight"
-                    highlight.FillColor = CurrentItemESPColor
-                    highlight.OutlineColor = CurrentItemESPOutlineColor
-                    highlight.FillTransparency = CurrentESPFillTransparency
-                end
-            end
+	Name = "Item ESP",
+	CurrentValue = false,
+	Flag = "ItemESP_Flag",
+	Callback = function(Value)
+		local ActualMap = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
 
-            for _, obj in ipairs(ActualMap:GetChildren()) do applyItemESP(obj) end
-            itemConnection = ActualMap.ChildAdded:Connect(applyItemESP)
-        else
-            if itemConnection then itemConnection:Disconnect() end
-            for _, obj in ipairs(workspace:GetDescendants()) do 
-                if obj.Name == "ItemHighlight" then obj:Destroy() end 
-            end
-        end
-    end,
+		if Value then
+			if not ActualMap then return end
+
+			local function applyItemESP(obj)
+				-- Checking for Tools or specific Item names in the map
+				if obj:IsA("Tool") and not obj:FindFirstChild("ItemHighlight") then
+					-- Optional: Filter for specific items if needed
+					local highlight = Instance.new("Highlight", obj)
+					highlight.Name = "ItemHighlight"
+					highlight.FillColor = CurrentItemESPColor
+					highlight.OutlineColor = CurrentItemESPOutlineColor
+					highlight.FillTransparency = CurrentESPFillTransparency
+				end
+			end
+
+			for _, obj in ipairs(ActualMap:GetChildren()) do applyItemESP(obj) end
+			itemConnection = ActualMap.ChildAdded:Connect(applyItemESP)
+		else
+			if itemConnection then itemConnection:Disconnect() end
+			for _, obj in ipairs(workspace:GetDescendants()) do 
+				if obj.Name == "ItemHighlight" then obj:Destroy() end 
+			end
+		end
+	end,
 })
 
 -- Movement/Speed Section
-local Forsaken_SpeedExploitsLabel = ForsakenTab:CreateParagraph({Title = "Speed Exploits", Content = ""})
+local Forsaken_SpeedExploitsLabel = ForsakenTab:CreateParagraph({Title = "Movement Exploits", Content = ""})
 local CurrentSpeedMultiplierValue = 1.35
 local Forsaken_SpeedMarkiplier = ForsakenTab:CreateSlider({
 	Name = "Set Speed Multiplier Value",
@@ -411,29 +347,115 @@ local Forsaken_CreateSpeedMarkiplier = ForsakenTab:CreateButton({
 	end,
 })
 
+local antiSlowdownConnection
+local antiSlowdownLoop
+
+local Forsaken_AntislowDown = ForsakenTab:CreateToggle({
+	Name = "Anti-Slowdown",
+	CurrentValue = false,
+	Flag = "AntiSlowdown_Flag",
+	Callback = function(Value)
+		if Value then
+			local function fixSpeeds(character)
+				local folder = character:FindFirstChild("SpeedMultipliers")
+				if folder then
+					for _, val in ipairs(folder:GetChildren()) do
+						if val:IsA("NumberValue") and val.Value < 1 then
+							val.Value = 1
+						end
+					end
+
+					-- Listen for new multipliers being added (e.g., getting hit or traps)
+					antiSlowdownConnection = folder.ChildAdded:Connect(function(child)
+						if child:IsA("NumberValue") then
+							-- Small delay to ensure the game has set the initial low value
+							task.wait()
+							if child.Value < 1 then
+								child.Value = 1
+							end
+							-- Also watch if the value changes later
+							child:GetPropertyChangedSignal("Value"):Connect(function()
+								if child.Value < 1 then child.Value = 1 end
+							end)
+						end
+					end)
+				end
+			end
+
+			-- Run immediately and start a loop as a fallback
+			local char = game.Players.LocalPlayer.Character
+			if char then fixSpeeds(char) end
+
+			antiSlowdownLoop = task.spawn(function()
+				while true do
+					local character = game.Players.LocalPlayer.Character
+					if character then
+						local folder = character:FindFirstChild("SpeedMultipliers")
+						if folder then
+							for _, v in ipairs(folder:GetChildren()) do
+								if v:IsA("NumberValue") and v.Value < 1 then
+									v.Value = 1
+								end
+							end
+						end
+					end
+					task.wait(0.5) -- Check every half second
+				end
+			end)
+		else
+			-- Cleanup
+			if antiSlowdownConnection then antiSlowdownConnection:Disconnect() end
+			if antiSlowdownLoop then task.cancel(antiSlowdownLoop) end
+		end
+	end,
+})
+
+local Forsaken_InfStamina = ForsakenTab:CreateToggle({
+	Name = "Infinite Stamina",
+	CurrentValue = false,
+	Flag = "AntiSlowdown_Flag",
+	Callback = function(Value)
+		local RS = game:GetService("ReplicatedStorage")
+		local SYS = RS:FindFirstChild("Systems")
+		local CHR = SYS:FindFirstChild("Character")
+		local GME = CHR:FindFirstChild("Game")
+		local SPR = require(GME:FindFirstChild("Sprinting"))
+		
+		if Value then
+			SPR.StaminaLossDisabled = true
+		else
+			SPR.StaminaLossDisabled = false
+		end
+	end,
+})
+
 -- Generator Fix Section
 local Forsaken_GeneratorExploitsLabel = ForsakenTab:CreateParagraph({Title = "Generator Exploits", Content = ""})
 local Forsaken_TPUnfinished = ForsakenTab:CreateButton({
-    Name = "TP to Unfinished Generator",
-    Callback = function()
-        local char = game.Players.LocalPlayer.Character
-        local map = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
-        
-        if char and map then
-            for _, obj in ipairs(map:GetChildren()) do
-                if obj.Name == "Generator" then
-                    local progress = obj:FindFirstChild("Progress")
-                    if progress and progress.Value < 100 then
-                        char:PivotTo(obj:GetPivot() * CFrame.new(0, 3, 0)) -- TPs slightly above to avoid stuck
-                        return -- Stop at the first unfinished one found
-                    end
-                end
-            end
-            Rayfield:Notify({Title = "Notice", Content = "All generators are finished!", Duration = 3})
-        end
-    end,
+	Name = "TP to Unfinished Generator",
+	Callback = function()
+		local char = game.Players.LocalPlayer.Character
+		local map = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
+
+		if char and map then
+			for _, obj in ipairs(map:GetChildren()) do
+				if obj.Name == "Generator" then
+					local progress = obj:FindFirstChild("Progress")
+					if progress and progress.Value < 100 then
+						char:PivotTo(obj:GetPivot() * CFrame.new(0, 3, 0)) -- TPs slightly above to avoid stuck
+						return -- Stop at the first unfinished one found
+					end
+				end
+			end
+			Rayfield:Notify({Title = "Notice", Content = "All generators are finished!", Duration = 3})
+		end
+	end,
 })
-local Forsaken_InstantFixGenerator = ForsakenTab:CreateButton({
+
+local instantfixdb = false
+local instantfixcd = 2.5
+
+Forsaken_InstantFixGenerator = ForsakenTab:CreateButton({
 	Name = "Fire RE (Finishes Puzzle)",
 	Callback = function()
 		local player = game.Players.LocalPlayer
@@ -444,6 +466,16 @@ local Forsaken_InstantFixGenerator = ForsakenTab:CreateButton({
 				if obj.Name == "Generator" and (character.PrimaryPart.Position - obj:GetPivot().Position).Magnitude <= 10 then
 					local re = obj:FindFirstChild("RE", true)
 					if re then re:FireServer() end
+					Forsaken_InstantFixGenerator:Set("Cooldown (2s)")
+					task.delay(1, function()
+						Forsaken_InstantFixGenerator:Set("Cooldown (1s)")
+					end)
+					task.delay(1, function()
+						Forsaken_InstantFixGenerator:Set("Cooldown (0s)")
+					end)
+					task.delay(instantfixcd + 0.1, function()
+						Forsaken_InstantFixGenerator:Set("Fire RE (Finishes Puzzle)")
+					end)
 				end
 			end
 		end
