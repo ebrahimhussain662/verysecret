@@ -365,7 +365,7 @@ local Forsaken_ItemESP = ForsakenTab:CreateToggle({
             
             local function applyItemESP(obj)
                 -- Checking for Tools or specific Item names in the map
-                if (obj:IsA("Tool") or obj:IsA("Model")) and not obj:FindFirstChild("ItemHighlight") then
+                if (obj:IsA("Tool") and not obj:FindFirstChild("ItemHighlight") then
                     -- Optional: Filter for specific items if needed
                     local highlight = Instance.new("Highlight", obj)
                     highlight.Name = "ItemHighlight"
