@@ -62,17 +62,12 @@ local Info_Message = InfoTab:CreateParagraph({
 
 local Info_Version = InfoTab:CreateParagraph({
 	Title = "ARTFUL'S MULTI-PURPOSE EXPLOIT",
-	Content = "Version 1.0.3 (December 23 2025)",
+	Content = "Version 1.0.2 (December 23 2025)",
 })
 
 local Info_SupportedGames = InfoTab:CreateParagraph({
 	Title = "SUPPORTED GAMES",
 	Content = "Forsaken\nDie Of Death",
-})
-
-local Info_UpdateLog = InfoTab:CreateParagraph({
-	Title = "UPDATE LOG",
-	Content = "- ACTUALLY Removed the Keybinds Tab\n- Added Anti-Slowdown Toggle\n- Added Infinite Stamina Toggle (STILL IN TESTING)",
 })
 
 local Info_GameID
@@ -442,7 +437,7 @@ local Forsaken_TPUnfinished = ForsakenTab:CreateButton({
 				if obj.Name == "Generator" then
 					local progress = obj:FindFirstChild("Progress")
 					if progress and progress.Value < 100 then
-						char:PivotTo(obj:GetPivot() * CFrame.new(0, 3, 0)) -- TPs slightly above to avoid stuck
+						char:PivotTo(obj.Positions.Center.CFrame) -- TPs slightly above to avoid stuck
 						return -- Stop at the first unfinished one found
 					end
 				end
@@ -461,7 +456,8 @@ Forsaken_InstantFixGenerator = ForsakenTab:CreateButton({
 		local player = game.Players.LocalPlayer
 		local character = player.Character
 		local ActualMap = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
-		if character and ActualMap then
+		if character and ActualMap and not instantfixdb then
+			instantfixdb = true
 			for _, obj in ipairs(ActualMap:GetChildren()) do
 				if obj.Name == "Generator" and (character.PrimaryPart.Position - obj:GetPivot().Position).Magnitude <= 10 then
 					local re = obj:FindFirstChild("RE", true)
@@ -470,11 +466,9 @@ Forsaken_InstantFixGenerator = ForsakenTab:CreateButton({
 					task.delay(1, function()
 						Forsaken_InstantFixGenerator:Set("Cooldown (1s)")
 					end)
-					task.delay(1, function()
-						Forsaken_InstantFixGenerator:Set("Cooldown (0s)")
-					end)
 					task.delay(instantfixcd + 0.1, function()
 						Forsaken_InstantFixGenerator:Set("Fire RE (Finishes Puzzle)")
+						instantfixdb = false
 					end)
 				end
 			end
@@ -501,6 +495,513 @@ local Forsaken_SetJumpPower = ForsakenTab:CreateButton({
 		if character and character:FindFirstChild("Humanoid") then
 			character.Humanoid.JumpPower = CurrentJumpPower
 			character.Humanoid.UseJumpPower = true
+		end
+	end,
+})
+
+-- Hitbox Section
+local Forsaken_OtherLabel = ForsakenTab:CreateParagraph({Title = "Hitbox Exploits", Content = "(IN TESTING)"})
+local Forsaken_ExtendHitbox = ForsakenTab:CreateButton({
+	Name = "Extend Hitbox (lasts 3s)",
+	Callback = function()
+		local character = game.Players.LocalPlayer.Character
+		local killersFolder = game.Workspace.Players.Killers
+
+		-- Function to find the nearest killer
+		local function getNearestKiller()
+			local closestKiller = nil
+			local shortestDistance = math.huge -- Start at infinity
+
+			for _, killer in pairs(killersFolder:GetChildren()) do
+				local root = killer:FindFirstChild("HumanoidRootPart")
+				if root then
+					local distance = (character.HumanoidRootPart.Position - root.Position).Magnitude
+					if distance < shortestDistance then
+						shortestDistance = distance
+						closestKiller = killer
+					end
+				end
+			end
+			return closestKiller
+		end
+
+		-- The Loop
+		if character and character:FindFirstChild("QueryHitbox") then
+			local duration = 3
+			local startTime = os.clock()
+
+			while (os.clock() - startTime) < duration do
+				local target = getNearestKiller()
+
+				if target and target:FindFirstChild("HumanoidRootPart") then
+					-- Move the hitbox to the nearest killer's position
+					character.QueryHitbox:PivotTo(target.HumanoidRootPart.CFrame)
+				end
+
+				task.wait()
+			end
+		end
+	end,
+})
+
+-- Animation Section
+local Forsaken_OtherLabel = ForsakenTab:CreateParagraph({Title = "Animation Exploits", Content = ""})
+local animHeartbeat
+local animInput
+local activeTracks = {}
+
+local StalkerAnimations = ForsakenTab:CreateToggle({
+	Name = "Stalker Animations",
+	CurrentValue = false,
+	Flag = "StalkerAnims",
+	Callback = function(Value)
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local humanoid = character:WaitForChild("Humanoid")
+
+		if Value then
+			-- << SETUP ANIMATIONS >> --
+			local ANIM_IDS = {
+				Idle = "rbxassetid://135419935358802",
+				Walk = "rbxassetid://95469909855529",
+				Run = "rbxassetid://109671225388655",
+				M1_1 = "rbxassetid://79710880505841",
+				M1_2 = "rbxassetid://70589254357640",
+				Blocked = "rbxassetid://80277760801310"
+			}
+
+			for name, id in pairs(ANIM_IDS) do
+				local anim = Instance.new("Animation")
+				anim.AnimationId = id
+				activeTracks[name] = humanoid:LoadAnimation(anim)
+			end
+
+			local canAttack = true
+			local nextIsAltAttack = false
+
+			-- << MOVEMENT LOGIC >> --
+			animHeartbeat = game:GetService("RunService").Heartbeat:Connect(function()
+				local isMoving = humanoid.MoveDirection.Magnitude > 0
+				local isRunning = humanoid.WalkSpeed > 20
+
+				if isMoving then
+					if isRunning then
+						if not activeTracks.Run.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Walk:Stop(); activeTracks.Run:Play()
+						end
+					else
+						if not activeTracks.Walk.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Run:Stop(); activeTracks.Walk:Play()
+						end
+					end
+				else
+					if not activeTracks.Idle.IsPlaying then
+						activeTracks.Walk:Stop(); activeTracks.Run:Stop(); activeTracks.Idle:Play()
+					end
+				end
+			end)
+
+			-- << ATTACK LOGIC >> --
+			animInput = game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
+				if not gp and input.UserInputType == Enum.UserInputType.MouseButton1 and canAttack then
+					canAttack = false
+					local track = nextIsAltAttack and activeTracks.M1_2 or activeTracks.M1_1
+					track:Play()
+					nextIsAltAttack = not nextIsAltAttack
+					task.wait(2) -- Cooldown
+					canAttack = true
+				end
+			end)
+		else
+			-- << CLEANUP >> --
+			if animHeartbeat then animHeartbeat:Disconnect() end
+			if animInput then animInput:Disconnect() end
+
+			-- Stop all tracks and clear table
+			for _, track in pairs(activeTracks) do
+				track:Stop()
+			end
+			activeTracks = {}
+		end
+	end,
+})
+
+local SlasherAnimations = ForsakenTab:CreateToggle({
+	Name = "Slasher Animations",
+	CurrentValue = false,
+	Flag = "SlasherAnims",
+	Callback = function(Value)
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local humanoid = character:WaitForChild("Humanoid")
+
+		if Value then
+			-- << SETUP ANIMATIONS >> --
+			local ANIM_IDS = {
+				Idle = "rbxassetid://116050994905421",
+				Walk = "rbxassetid://93622022596108",
+				Run = "rbxassetid://93054787145505",
+				M1_1 = "rbxassetid://126830014841198",
+				M1_2 = "rbxassetid://126830014841198",
+				Blocked = "rbxassetid://80277760801310"
+			}
+
+			for name, id in pairs(ANIM_IDS) do
+				local anim = Instance.new("Animation")
+				anim.AnimationId = id
+				activeTracks[name] = humanoid:LoadAnimation(anim)
+			end
+
+			local canAttack = true
+			local nextIsAltAttack = false
+
+			-- << MOVEMENT LOGIC >> --
+			animHeartbeat = game:GetService("RunService").Heartbeat:Connect(function()
+				local isMoving = humanoid.MoveDirection.Magnitude > 0
+				local isRunning = humanoid.WalkSpeed > 20
+
+				if isMoving then
+					if isRunning then
+						if not activeTracks.Run.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Walk:Stop(); activeTracks.Run:Play()
+						end
+					else
+						if not activeTracks.Walk.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Run:Stop(); activeTracks.Walk:Play()
+						end
+					end
+				else
+					if not activeTracks.Idle.IsPlaying then
+						activeTracks.Walk:Stop(); activeTracks.Run:Stop(); activeTracks.Idle:Play()
+					end
+				end
+			end)
+
+			-- << ATTACK LOGIC >> --
+			animInput = game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
+				if not gp and input.UserInputType == Enum.UserInputType.MouseButton1 and canAttack then
+					canAttack = false
+					local track = nextIsAltAttack and activeTracks.M1_2 or activeTracks.M1_1
+					track:Play()
+					nextIsAltAttack = not nextIsAltAttack
+					task.wait(2) -- Cooldown
+					canAttack = true
+				end
+			end)
+		else
+			-- << CLEANUP >> --
+			if animHeartbeat then animHeartbeat:Disconnect() end
+			if animInput then animInput:Disconnect() end
+
+			-- Stop all tracks and clear table
+			for _, track in pairs(activeTracks) do
+				track:Stop()
+			end
+			activeTracks = {}
+		end
+	end,
+})
+
+local CoolkiddAnimations = ForsakenTab:CreateToggle({
+	Name = "c00lkidd Animations",
+	CurrentValue = false,
+	Flag = "CoolkiddAnims",
+	Callback = function(Value)
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local humanoid = character:WaitForChild("Humanoid")
+
+		if Value then
+			-- << SETUP ANIMATIONS >> --
+			local ANIM_IDS = {
+				Idle = "rbxassetid://18885903667",
+				Walk = "rbxassetid://18885906143",
+				Run = "rbxassetid://96571077893813",
+				M1_1 = "rbxassetid://18885909645",
+				M1_2 = "rbxassetid://18885909645",
+				Blocked = "rbxassetid://80277760801310"
+			}
+
+			for name, id in pairs(ANIM_IDS) do
+				local anim = Instance.new("Animation")
+				anim.AnimationId = id
+				activeTracks[name] = humanoid:LoadAnimation(anim)
+			end
+
+			local canAttack = true
+			local nextIsAltAttack = false
+
+			-- << MOVEMENT LOGIC >> --
+			animHeartbeat = game:GetService("RunService").Heartbeat:Connect(function()
+				local isMoving = humanoid.MoveDirection.Magnitude > 0
+				local isRunning = humanoid.WalkSpeed > 20
+
+				if isMoving then
+					if isRunning then
+						if not activeTracks.Run.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Walk:Stop(); activeTracks.Run:Play()
+						end
+					else
+						if not activeTracks.Walk.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Run:Stop(); activeTracks.Walk:Play()
+						end
+					end
+				else
+					if not activeTracks.Idle.IsPlaying then
+						activeTracks.Walk:Stop(); activeTracks.Run:Stop(); activeTracks.Idle:Play()
+					end
+				end
+			end)
+
+			-- << ATTACK LOGIC >> --
+			animInput = game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
+				if not gp and input.UserInputType == Enum.UserInputType.MouseButton1 and canAttack then
+					canAttack = false
+					local track = nextIsAltAttack and activeTracks.M1_2 or activeTracks.M1_1
+					track:Play()
+					nextIsAltAttack = not nextIsAltAttack
+					task.wait(2) -- Cooldown
+					canAttack = true
+				end
+			end)
+		else
+			-- << CLEANUP >> --
+			if animHeartbeat then animHeartbeat:Disconnect() end
+			if animInput then animInput:Disconnect() end
+
+			-- Stop all tracks and clear table
+			for _, track in pairs(activeTracks) do
+				track:Stop()
+			end
+			activeTracks = {}
+		end
+	end,
+})
+
+local JohnDoeAnimations = ForsakenTab:CreateToggle({
+	Name = "John Doe Animations",
+	CurrentValue = false,
+	Flag = "JohnToeAnims",
+	Callback = function(Value)
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local humanoid = character:WaitForChild("Humanoid")
+
+		if Value then
+			-- << SETUP ANIMATIONS >> --
+			local ANIM_IDS = {
+				Idle = "rbxassetid://105880087711722",
+				Walk = "rbxassetid://81193817424328",
+				Run = "rbxassetid://132653655520682",
+				M1_1 = "rbxassetid://105458270463374",
+				M1_2 = "rbxassetid://105458270463374",
+				Blocked = "rbxassetid://80277760801310"
+			}
+
+			for name, id in pairs(ANIM_IDS) do
+				local anim = Instance.new("Animation")
+				anim.AnimationId = id
+				activeTracks[name] = humanoid:LoadAnimation(anim)
+			end
+
+			local canAttack = true
+			local nextIsAltAttack = false
+
+			-- << MOVEMENT LOGIC >> --
+			animHeartbeat = game:GetService("RunService").Heartbeat:Connect(function()
+				local isMoving = humanoid.MoveDirection.Magnitude > 0
+				local isRunning = humanoid.WalkSpeed > 20
+
+				if isMoving then
+					if isRunning then
+						if not activeTracks.Run.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Walk:Stop(); activeTracks.Run:Play()
+						end
+					else
+						if not activeTracks.Walk.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Run:Stop(); activeTracks.Walk:Play()
+						end
+					end
+				else
+					if not activeTracks.Idle.IsPlaying then
+						activeTracks.Walk:Stop(); activeTracks.Run:Stop(); activeTracks.Idle:Play()
+					end
+				end
+			end)
+
+			-- << ATTACK LOGIC >> --
+			animInput = game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
+				if not gp and input.UserInputType == Enum.UserInputType.MouseButton1 and canAttack then
+					canAttack = false
+					local track = nextIsAltAttack and activeTracks.M1_2 or activeTracks.M1_1
+					track:Play()
+					nextIsAltAttack = not nextIsAltAttack
+					task.wait(2) -- Cooldown
+					canAttack = true
+				end
+			end)
+		else
+			-- << CLEANUP >> --
+			if animHeartbeat then animHeartbeat:Disconnect() end
+			if animInput then animInput:Disconnect() end
+
+			-- Stop all tracks and clear table
+			for _, track in pairs(activeTracks) do
+				track:Stop()
+			end
+			activeTracks = {}
+		end
+	end,
+})
+
+local NoliAnimations = ForsakenTab:CreateToggle({
+	Name = "Noli Animations",
+	CurrentValue = false,
+	Flag = "NolaAnims",
+	Callback = function(Value)
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local humanoid = character:WaitForChild("Humanoid")
+
+		if Value then
+			-- << SETUP ANIMATIONS >> --
+			local ANIM_IDS = {
+				Idle = "rbxassetid://83465205704188",
+				Walk = "rbxassetid://109700476007435",
+				Run = "rbxassetid://117451341682452",
+				M1_1 = "rbxassetid://106538427162796",
+				M1_2 = "rbxassetid://106538427162796",
+				Blocked = "rbxassetid://80277760801310"
+			}
+
+			for name, id in pairs(ANIM_IDS) do
+				local anim = Instance.new("Animation")
+				anim.AnimationId = id
+				activeTracks[name] = humanoid:LoadAnimation(anim)
+			end
+
+			local canAttack = true
+			local nextIsAltAttack = false
+
+			-- << MOVEMENT LOGIC >> --
+			animHeartbeat = game:GetService("RunService").Heartbeat:Connect(function()
+				local isMoving = humanoid.MoveDirection.Magnitude > 0
+				local isRunning = humanoid.WalkSpeed > 20
+
+				if isMoving then
+					if isRunning then
+						if not activeTracks.Run.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Walk:Stop(); activeTracks.Run:Play()
+						end
+					else
+						if not activeTracks.Walk.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Run:Stop(); activeTracks.Walk:Play()
+						end
+					end
+				else
+					if not activeTracks.Idle.IsPlaying then
+						activeTracks.Walk:Stop(); activeTracks.Run:Stop(); activeTracks.Idle:Play()
+					end
+				end
+			end)
+
+			-- << ATTACK LOGIC >> --
+			animInput = game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
+				if not gp and input.UserInputType == Enum.UserInputType.MouseButton1 and canAttack then
+					canAttack = false
+					local track = nextIsAltAttack and activeTracks.M1_2 or activeTracks.M1_1
+					track:Play()
+					nextIsAltAttack = not nextIsAltAttack
+					task.wait(2) -- Cooldown
+					canAttack = true
+				end
+			end)
+		else
+			-- << CLEANUP >> --
+			if animHeartbeat then animHeartbeat:Disconnect() end
+			if animInput then animInput:Disconnect() end
+
+			-- Stop all tracks and clear table
+			for _, track in pairs(activeTracks) do
+				track:Stop()
+			end
+			activeTracks = {}
+		end
+	end,
+})
+
+local OneEXAnimations = ForsakenTab:CreateToggle({
+	Name = "1x1x1x1 Animations",
+	CurrentValue = false,
+	Flag = "1eggsAnims",
+	Callback = function(Value)
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local humanoid = character:WaitForChild("Humanoid")
+
+		if Value then
+			-- << SETUP ANIMATIONS >> --
+			local ANIM_IDS = {
+				Idle = "rbxassetid://138754221537146",
+				Walk = "rbxassetid://109130982296927",
+				Run = "rbxassetid://106485518413331",
+				M1_1 = "rbxassetid://83829782357897",
+				M1_2 = "rbxassetid://83829782357897",
+				Blocked = "rbxassetid://80277760801310"
+			}
+
+			for name, id in pairs(ANIM_IDS) do
+				local anim = Instance.new("Animation")
+				anim.AnimationId = id
+				activeTracks[name] = humanoid:LoadAnimation(anim)
+			end
+
+			local canAttack = true
+			local nextIsAltAttack = false
+
+			-- << MOVEMENT LOGIC >> --
+			animHeartbeat = game:GetService("RunService").Heartbeat:Connect(function()
+				local isMoving = humanoid.MoveDirection.Magnitude > 0
+				local isRunning = humanoid.WalkSpeed > 20
+
+				if isMoving then
+					if isRunning then
+						if not activeTracks.Run.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Walk:Stop(); activeTracks.Run:Play()
+						end
+					else
+						if not activeTracks.Walk.IsPlaying then
+							activeTracks.Idle:Stop(); activeTracks.Run:Stop(); activeTracks.Walk:Play()
+						end
+					end
+				else
+					if not activeTracks.Idle.IsPlaying then
+						activeTracks.Walk:Stop(); activeTracks.Run:Stop(); activeTracks.Idle:Play()
+					end
+				end
+			end)
+
+			-- << ATTACK LOGIC >> --
+			animInput = game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
+				if not gp and input.UserInputType == Enum.UserInputType.MouseButton1 and canAttack then
+					canAttack = false
+					local track = nextIsAltAttack and activeTracks.M1_2 or activeTracks.M1_1
+					track:Play()
+					nextIsAltAttack = not nextIsAltAttack
+					task.wait(2) -- Cooldown
+					canAttack = true
+				end
+			end)
+		else
+			-- << CLEANUP >> --
+			if animHeartbeat then animHeartbeat:Disconnect() end
+			if animInput then animInput:Disconnect() end
+
+			-- Stop all tracks and clear table
+			for _, track in pairs(activeTracks) do
+				track:Stop()
+			end
+			activeTracks = {}
 		end
 	end,
 })
