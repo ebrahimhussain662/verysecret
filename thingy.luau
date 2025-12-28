@@ -21,7 +21,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
 	Name = "Artful's Multi-Purpose Exploit",
 	Icon = 0,
-	LoadingTitle = "Artful's Multi-Purpose Exploit",
+	LoadingTitle = "Artful's Forsaken Exploit",
 	LoadingSubtitle = "by Artful",
 	Theme = "Default",
 
@@ -61,12 +61,12 @@ local Info_Message = InfoTab:CreateParagraph({
 })
 
 local Info_Version = InfoTab:CreateParagraph({
-	Title = "ARTFUL'S MULTI-PURPOSE EXPLOIT",
+	Title = "ARTFUL'S FORSAKEN EXPLOIT",
 	Content = "Version 1.0.2 (December 23 2025)",
 })
 
 local Info_SupportedGames = InfoTab:CreateParagraph({
-	Title = "SUPPORTED GAMES",
+	Title = "(Soon to be) SUPPORTED GAMES",
 	Content = "Forsaken\nDie Of Death",
 })
 
@@ -499,50 +499,6 @@ local Forsaken_SetJumpPower = ForsakenTab:CreateButton({
 	end,
 })
 
--- Hitbox Section
-local Forsaken_OtherLabel = ForsakenTab:CreateParagraph({Title = "Hitbox Exploits", Content = "(IN TESTING)"})
-local Forsaken_ExtendHitbox = ForsakenTab:CreateButton({
-	Name = "Extend Hitbox (lasts 3s)",
-	Callback = function()
-		local character = game.Players.LocalPlayer.Character
-		local killersFolder = game.Workspace.Players.Killers
-
-		-- Function to find the nearest killer
-		local function getNearestKiller()
-			local closestKiller = nil
-			local shortestDistance = math.huge -- Start at infinity
-
-			for _, killer in pairs(killersFolder:GetChildren()) do
-				local root = killer:FindFirstChild("HumanoidRootPart")
-				if root then
-					local distance = (character.HumanoidRootPart.Position - root.Position).Magnitude
-					if distance < shortestDistance then
-						shortestDistance = distance
-						closestKiller = killer
-					end
-				end
-			end
-			return closestKiller
-		end
-
-		-- The Loop
-		if character and character:FindFirstChild("QueryHitbox") then
-			local duration = 3
-			local startTime = os.clock()
-
-			while (os.clock() - startTime) < duration do
-				local target = getNearestKiller()
-
-				if target and target:FindFirstChild("HumanoidRootPart") then
-					-- Move the hitbox to the nearest killer's position
-					character.QueryHitbox:PivotTo(target.HumanoidRootPart.CFrame)
-				end
-
-				task.wait()
-			end
-		end
-	end,
-})
 
 -- Animation Section
 local Forsaken_OtherLabel = ForsakenTab:CreateParagraph({Title = "Animation Exploits", Content = ""})
