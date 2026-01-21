@@ -40,7 +40,7 @@ local WhitelistedGUIDS = {
 
 
 --[[ Global Variables ]]--
-_G.dod_developer_key = "Nexer" -- my name yaa
+_G.dod_developer_key = "SeekCamPos_0" -- my name yaa
 _G.dod_name = "Die Of Death" -- name of the game that we will surely need
 _G.API_last_update = "1/1/2026" -- last time update (dd/mm/yyyy)
 _G.dod_repository = "https://raw.githubusercontent.com/NewNexer/NexerHub/refs/heads/main/DOD/Main.luau" -- input repository for savings
