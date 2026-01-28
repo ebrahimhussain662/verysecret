@@ -25,7 +25,8 @@ local Window = Rayfield:CreateWindow({
 	Icon = 0,
 	LoadingTitle = "Artful's Forsaken Exploit",
 	LoadingSubtitle = "by Artful",
-	Theme = "Default",
+	ShowText = "Artfulsaken",
+	Theme = "AmberGlow",
 
 	DisableRayfieldPrompts = false,
 	DisableBuildWarnings = false,
